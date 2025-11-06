@@ -1,3 +1,9 @@
+# Frontend workspace (exclude from repo)
+/frontend/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

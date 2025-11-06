@@ -1,0 +1,32 @@
+Implementado
+Factory
+Strategy
+State -> 70%
+
+Falta
+
+Observer - Decorator
+
+
+Comentarios:
+
+Hay qque revisar atributos a agregar o modificar tipo, desde el flujo de ingreso
+como en persistencia.
+Por otro lado ver tambien los parametros que reciben las funciones.
+Ver relaciones en DB para una eficiente persistencia
+
+
+UPDATE 6/11
+
+Implementado todos los patrones -> Next step -> Probar la API (CONFIGURAR TWILIO ANTES!!)
+
+Seguramente rompa en varios lugares.
+
+
+-- Levanto.
+
+Terminar los controllers - Services
+
+Una vez testeado la consistencia de datos en la API, ya estaria
+
+De nuevo, CONFIGURAR TWILIO

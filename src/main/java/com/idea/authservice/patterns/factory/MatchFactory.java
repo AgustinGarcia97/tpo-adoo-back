@@ -1,0 +1,57 @@
+package com.idea.authservice.patterns.factory;
+
+import com.idea.authservice.dtos.MatchDTO;
+import com.idea.authservice.model.Match;
+import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+@Component
+@Slf4j
+public class MatchFactory {
+
+    private final Map<String, Function<MatchDTO, Match>> creators = new HashMap<>();
+
+    public MatchFactory() {
+        creators.put("futbol", dto -> {
+            FutbolMatch m = new FutbolMatch();
+            fillCommon(m, dto);
+            return m;
+        });
+        creators.put("basket", dto -> {
+            BasketballMatch m = new BasketballMatch();
+            fillCommon(m, dto);
+            return m;
+        });
+    }
+
+    public Match CreateMatch(MatchDTO matchDTO){
+        if (matchDTO == null || matchDTO.getSport() == null) {
+            throw new IllegalArgumentException("Datos de partido inválidos");
+        }
+        log.info("[Factory] Creando partido para deporte: {}", matchDTO.getSport());
+        Function<MatchDTO, Match> creator = creators.get(matchDTO.getSport().toLowerCase());
+        if (creator == null) {
+            throw new IllegalArgumentException("Deporte no soportado: " + matchDTO.getSport());
+        }
+        Match m = creator.apply(matchDTO);
+        log.info("[Factory] Partido creado: tipo={}, location={}, level={} ", m.getClass().getSimpleName(), m.getLocation(), m.getLevel());
+        return m;
+
+
+
+    }
+
+    private void fillCommon(Match m, MatchDTO dto) {
+        m.setDateTime(dto.getDateTime());
+        m.setLocation(dto.getLocation());
+        m.setRegion(dto.getRegion());
+        m.setSport(dto.getSport());
+        m.setCreatorId(dto.getCreatorId());
+        m.setLevel(dto.getLevel());
+        log.debug("[Factory] Campos comunes seteados para deporte={} creatorId={}", dto.getSport(), dto.getCreatorId());
+    }
+}
