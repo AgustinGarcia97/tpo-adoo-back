@@ -1,11 +1,21 @@
 package com.idea.authservice.repository;
 
 import com.idea.authservice.model.Match;
+import com.idea.authservice.dtos.MatchListDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MatchRepository extends JpaRepository <Match, Long> {
     public List<Match> findBySport(String sport);
+    
+    @Query("select new com.idea.authservice.dtos.MatchListDTO(m.id, m.dateTime, m.location, m.region, m.sport, m.creatorId, m.level, m.status, size(m.players), (case when (exists (select 1 from m.players p where p.id = :userId)) then true else false end)) from Match m")
+    List<MatchListDTO> findAllForList(@Param("userId") java.util.UUID userId);
+    
+    @Query("select m from Match m left join fetch m.players where m.id = :id")
+    Optional<Match> findByIdWithPlayers(@Param("id") Long id);
 
 }

@@ -6,15 +6,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import com.idea.authservice.model.enums.MatchStatus;
-import java.util.List;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MatchDTO {
+public class MatchListDTO {
     private Long id;
-    private java.util.Set<PlayerDTO> players;
     private LocalDateTime dateTime;
     private String location;
     private String region;
@@ -22,5 +20,8 @@ public class MatchDTO {
     private UUID creatorId;
     private String level;
     private MatchStatus status;
-
+    private Integer playersCount;
+    private Boolean joined;
 }
+
+

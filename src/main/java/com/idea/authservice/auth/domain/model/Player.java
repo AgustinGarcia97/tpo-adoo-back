@@ -4,6 +4,7 @@ import com.idea.authservice.auth.domain.model.enums.Role;
 import com.idea.authservice.model.Match;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +19,14 @@ import java.util.UUID;
 @Entity
 @Table(name="users")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Player implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @EqualsAndHashCode.Include
     private UUID id;
     @Column(unique=true, nullable=false)
     private String username;
@@ -38,10 +41,10 @@ public class Player implements UserDetails {
     @Column(nullable=false)
     private String location;
     private String phone;
-    @ManyToOne
-    @JoinColumn(name = "match_id") //
+    @ManyToMany(mappedBy = "players")
+    @ToString.Exclude
     @JsonIgnore
-    private Match match;
+    private java.util.Set<Match> matches = new java.util.HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

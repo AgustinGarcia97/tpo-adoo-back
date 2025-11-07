@@ -3,6 +3,7 @@ package com.idea.authservice.controller;
 
 
 import com.idea.authservice.dtos.MatchDTO;
+import com.idea.authservice.dtos.MatchListDTO;
 import com.idea.authservice.service.MatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -77,7 +77,7 @@ public class MatchController {
     // 🔹 4. Consultas generales
     // -------------------------------
     @GetMapping
-    public ResponseEntity<List<MatchDTO>> getAllMatches() {
+    public ResponseEntity<List<MatchListDTO>> getAllMatches() {
         return ResponseEntity.ok(matchService.getAllMatches());
     }
 

@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 public class LocationBased implements JoinStrategy {
     @Override
     public boolean canJoin(Player player, Match match) {
-        boolean result = player != null && match != null && player.getLocation() != null && player.getLocation().equals(match.getLocation());
+        boolean result = player != null && match != null
+                && player.getLocation() != null && match.getLocation() != null
+                && player.getLocation().trim().equalsIgnoreCase(match.getLocation().trim());
         log.info("[Strategy:location] playerLocation={} matchLocation={} -> {}",
                 player != null ? player.getLocation() : null,
                 match != null ? match.getLocation() : null,

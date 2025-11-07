@@ -12,6 +12,4 @@ import java.util.UUID;
 public class PlayerDTO {
     private UUID id;
     private String username;
-    private String password;
-    private String phone;
 }

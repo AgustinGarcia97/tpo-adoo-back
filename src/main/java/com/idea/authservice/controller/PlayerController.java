@@ -16,29 +16,23 @@ public class PlayerController {
 
     private final PlayerService playerService;
 
-    // Creación de jugadores se realiza vía /api/v1/auth/register
 
-    // -------------------------------
-    // 🔹 2. Obtener jugador por ID
-    // -------------------------------
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Player> getPlayerById(@PathVariable UUID id) {
         Player player = playerService.findById(id);
         return player != null ? ResponseEntity.ok(player) : ResponseEntity.notFound().build();
     }
 
-    // -------------------------------
-    // 🔹 3. Obtener todos los jugadores
-    // -------------------------------
+
     @GetMapping
     public ResponseEntity<List<Player>> getAllPlayers() {
         List<Player> players = playerService.getAllPlayers();
         return ResponseEntity.ok(players);
     }
 
-    // -------------------------------
-    // 🔹 4. Eliminar jugador
-    // -------------------------------
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePlayer(@PathVariable UUID id) {
         boolean deleted = playerService.deletePlayer(id);

@@ -7,10 +7,13 @@ import com.idea.authservice.patterns.state.MatchState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.ToString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.idea.authservice.patterns.strategy.join.JoinStrategy;
+import com.idea.authservice.patterns.state.CreatedState;
 import com.idea.authservice.model.enums.MatchStatus;
 
 import java.time.LocalDate;
@@ -24,12 +27,14 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "match_type")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
 public class Match implements MatchSubject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
     private LocalDateTime dateTime;
     private String location;
@@ -37,6 +42,7 @@ public class Match implements MatchSubject {
     private UUID creatorId;
     @Transient
     @JsonIgnore
+    @ToString.Exclude
     private MatchState state;
     private String level;
     private String msg;
@@ -44,13 +50,18 @@ public class Match implements MatchSubject {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MatchStatus status;
-    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
-    private List<Player> players = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "match_players",
+            joinColumns = @JoinColumn(name = "match_id"),
+            inverseJoinColumns = @JoinColumn(name = "player_id"))
+    private java.util.Set<Player> players = new java.util.HashSet<>();
     @Transient
+    @ToString.Exclude
     private final List<MatchObserver> observers = new ArrayList<>();
 
     @Transient
     @JsonIgnore
+    @ToString.Exclude
     private JoinStrategy joinStrategy;
 
     public void setState(MatchState state) {
@@ -86,7 +97,7 @@ public class Match implements MatchSubject {
     @PostPersist
     private void ensureStateInitialized() {
         if (this.state == null) {
-            this.state = new com.idea.authservice.patterns.state.CreatedState();
+            this.state = new CreatedState();
             log.info("[State] Inicializado estado CreatedState para matchId={}", this.id);
         }
         if (this.status == null) {

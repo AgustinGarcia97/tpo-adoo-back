@@ -3,6 +3,8 @@ package com.idea.authservice.auth.infraestructure.config;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import com.idea.authservice.model.Match;
+import com.idea.authservice.dtos.MatchDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,22 +19,21 @@ public class ModelMapperConfiguration {
 
         modelMapper.getConfiguration().setMatchingStrategy(STRICT);
         modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.getConfiguration().setCollectionsMergeEnabled(false);
 
         // Mapping Match -> MatchDTO
-        modelMapper.addMappings(new PropertyMap<com.idea.authservice.model.Match, com.idea.authservice.dtos.MatchDTO>() {
+        modelMapper.addMappings(new PropertyMap<Match, MatchDTO>() {
             @Override
             protected void configure() {
                 map().setCreatorId(source.getCreatorId());
-                map().setStatus(source.getStatus().name());
             }
         });
 
         // Mapping MatchDTO -> Match
-        modelMapper.addMappings(new PropertyMap<com.idea.authservice.dtos.MatchDTO, com.idea.authservice.model.Match>() {
+        modelMapper.addMappings(new PropertyMap<MatchDTO, Match>() {
             @Override
             protected void configure() {
                 map().setCreatorId(source.getCreatorId());
-                when(ctx -> source.getStatus() != null).map().setStatus(com.idea.authservice.model.enums.MatchStatus.valueOf(source.getStatus()));
             }
         });
 
