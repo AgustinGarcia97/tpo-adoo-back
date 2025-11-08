@@ -34,6 +34,7 @@ public class AuthenticationPersistence {
                 .nivelJugador(request.getNivelJugador())
                 .location(request.getLocation())
                 .phone(request.getPhone())
+                .favoriteSport(request.getFavoriteSport())
                 .role(Role.valueOf("ADMIN"))
                 .build();
 

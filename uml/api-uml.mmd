@@ -1,0 +1,132 @@
+classDiagram
+direction LR
+
+%% ===== Controllers =====
+class AuthenticationController
+class MatchController
+class PlayerController
+
+%% ===== Services / Scheduler =====
+class MatchService
+class PlayerService
+class MatchScheduler
+
+%% ===== Repositories =====
+class MatchRepository
+class PlayerRepository
+class UserRepository
+
+%% ===== Entities / DTOs =====
+class Match {
+  +id: Long
+  +dateTime: LocalDateTime
+  +location: String
+  +region: String
+  +creatorId: UUID
+  +level: String
+  +sport: String
+  +status: MatchStatus
+  +requiredPlayers: Integer
+  +durationMinutes: Integer
+  +joinStrategyKey: String
+  +addObserver(o: MatchObserver)
+  +notifyObservers(msg: String)
+  +start()
+  +finish()
+  +cancel()
+}
+class Player { +id: UUID +username: String +role: Role +nivelJugador: String +location: String +phone: String +favoriteSport: String }
+class MatchDTO
+class MatchListDTO
+class PlayerDTO
+
+Match "0..*" -- "0..*" Player : players  (asociación many-to-many)
+
+%% ===== Strategy =====
+class JoinStrategy { +canJoin(Player, Match) boolean }
+class SkillBased
+class LocationBased
+JoinStrategy <|.. SkillBased        %% realización
+JoinStrategy <|.. LocationBased     %% realización
+
+%% Agregación: el service agrupa estrategias (ciclo de vida compartido)
+MatchService o-- "1..*" JoinStrategy : strategies
+
+%% ===== State =====
+class MatchState { +start(Match) String +finish(Match) String +cancel(Match) String }
+class CreatedState
+class InProgressState
+class FinishedState
+class CancelledState
+MatchState <|.. CreatedState        %% realización
+MatchState <|.. InProgressState
+MatchState <|.. FinishedState
+MatchState <|.. CancelledState
+
+%% Composición: el estado pertenece al Match
+Match *-- "1" MatchState : state
+
+%% ===== Observer + Decorator =====
+class MatchObserver { +update(Match, String) }
+class MatchSubject { +addObserver(MatchObserver) +notifyObservers(String) }
+MatchSubject <|.. Match              %% realización (Match es sujeto)
+
+class INotifier { +notify(Match, String) }
+MatchObserver <|-- INotifier         %% generalización: INotifier extiende MatchObserver
+
+class BasicNotifier
+class EmailNotifier { -wrappee: INotifier -mailSender: JavaMailSender -fromAddress: String }
+class WhatsAppNotifier { -wrappee: INotifier }
+
+INotifier <|.. BasicNotifier         %% realización
+INotifier <|.. EmailNotifier         %% realización
+INotifier <|.. WhatsAppNotifier      %% realización
+
+%% Composición en Decorator (propiedad fuerte del wrappee)
+EmailNotifier *-- INotifier : wrappee
+WhatsAppNotifier *-- INotifier : wrappee
+
+%% Asociación: el partido mantiene observers (no es dueño del ciclo de vida)
+Match --> "0..*" MatchObserver : observers
+
+%% ===== Factory =====
+class MatchFactory { +CreateMatch(MatchDTO) Match }
+class FutbolMatch
+class BasketballMatch
+Match <|-- FutbolMatch              %% herencia
+Match <|-- BasketballMatch          %% herencia
+MatchFactory ..> FutbolMatch        %% dependencia (creación)
+MatchFactory ..> BasketballMatch    %% dependencia (creación)
+
+%% ===== Config =====
+class NotifierConfig { +notifier(JavaMailSender,String): INotifier }
+NotifierConfig ..> INotifier        %% dependencia (@Bean)
+
+%% ===== Infra/Auth =====
+class AuthenticationPersistence
+class JwtService
+
+%% ===== Wiring principal =====
+AuthenticationController ..> AuthenticationPersistence
+MatchController ..> MatchService
+PlayerController ..> PlayerService
+
+MatchService ..> MatchRepository
+MatchService ..> PlayerService
+MatchService ..> UserRepository
+MatchService ..> INotifier
+MatchService ..> MatchDTO
+MatchService ..> MatchListDTO
+MatchService ..> PlayerDTO
+
+PlayerService ..> PlayerRepository
+
+MatchRepository ..> Match
+PlayerRepository ..> Player
+UserRepository ..> Player
+
+MatchScheduler ..> MatchRepository
+MatchScheduler ..> INotifier
+MatchScheduler ..> Match : addObserver()/start()
+
+

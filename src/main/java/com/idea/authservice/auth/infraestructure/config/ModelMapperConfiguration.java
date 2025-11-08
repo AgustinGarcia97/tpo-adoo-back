@@ -3,8 +3,8 @@ package com.idea.authservice.auth.infraestructure.config;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import com.idea.authservice.model.Match;
-import com.idea.authservice.dtos.MatchDTO;
+import com.idea.authservice.api.model.Match;
+import com.idea.authservice.api.dtos.MatchDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

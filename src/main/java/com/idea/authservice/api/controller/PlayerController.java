@@ -1,0 +1,45 @@
+package com.idea.authservice.api.controller;
+
+import com.idea.authservice.auth.domain.model.Player;
+import com.idea.authservice.api.service.PlayerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/players")
+@RequiredArgsConstructor
+public class PlayerController {
+
+    private final PlayerService playerService;
+
+
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Player> getPlayerById(@PathVariable UUID id) {
+        Player player = playerService.findById(id);
+        return player != null ? ResponseEntity.ok(player) : ResponseEntity.notFound().build();
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<Player>> getAllPlayers() {
+        List<Player> players = playerService.getAllPlayers();
+        return ResponseEntity.ok(players);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePlayer(@PathVariable UUID id) {
+        boolean deleted = playerService.deletePlayer(id);
+        if (deleted) {
+            return ResponseEntity.ok().body("Jugador eliminado correctamente");
+        } else {
+            return ResponseEntity.badRequest().body("No se encontró el jugador con ID: " + id);
+        }
+    }
+}

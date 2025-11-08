@@ -1,7 +1,7 @@
 package com.idea.authservice.auth.domain.model;
 
 import com.idea.authservice.auth.domain.model.enums.Role;
-import com.idea.authservice.model.Match;
+import com.idea.authservice.api.model.Match;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.ToString;
@@ -41,6 +41,8 @@ public class Player implements UserDetails {
     @Column(nullable=false)
     private String location;
     private String phone;
+    @Column(name="favorite_sport")
+    private String favoriteSport;
     @ManyToMany(mappedBy = "players")
     @ToString.Exclude
     @JsonIgnore
